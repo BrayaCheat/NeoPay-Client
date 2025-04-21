@@ -2,10 +2,12 @@
   <div class="flex flex-col gap-9">
     <div class="flex items-center justify-between">
       <Header title="Accounts" :subtitle="`You have ${filteredAccount.length} active accounts.`" />
-      <Button>
-        <component :is="Plus" />
-        New Account
-      </Button>
+      <NuxtLink to="/accounts/new-account">
+        <Button>
+          <component :is="Plus" />
+          New Account
+        </Button>
+      </NuxtLink>
     </div>
 
     <div class="flex items-center gap-3">
@@ -61,7 +63,10 @@
 
     <div v-if="filteredAccount.length > 0" class="grid grid-cols-3 gap-9">
       <div v-for="(item, index) in filteredAccount" :key="index">
-        <AccountCard :data="item" />
+        <AccountCard
+          :data="item"
+          @onDeleteAccount="onFetchAccount"
+        />
       </div>
     </div>
     <SkeletonCard v-else message="No accounts found. Create one?" :icon="Scroll"
@@ -71,7 +76,7 @@
 
 <script setup>
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
 })
 import PieChart from '@/components/PieChart.vue';
 import AccountCard from '@/components/AccountCard.vue';
@@ -87,6 +92,10 @@ const userStore = useUserStore()
 const filteredAccount = computed(() => accountStore?.accounts || [])
 
 const searchQuery = ref('')
+
+const onFetchAccount = async () => {
+  await getAccount(userStore.user?.id);
+}
 
 onMounted(async () => {
   accountStore.accounts = await getAccount(userStore.user?.id);

@@ -29,16 +29,12 @@ const items = [
     title: "Transfer Money",
     url: "/transfer",
     icon: DollarSign,
-  },
-  {
-    title: "Connect Bank",
-    url: "/connect",
-    icon: CreditCard,
-  },
+  }
 ];
+const route = useRoute()
 
 const isActive = (url) => {
-  return window.location.pathname === url;
+  return route.path === url;
 };
 </script>
 
@@ -54,10 +50,10 @@ const isActive = (url) => {
           <SidebarMenu class="gap-3">
             <SidebarMenuItem v-for="item in items" :key="item.title" :class="`${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`">
               <SidebarMenuButton asChild>
-                <a :href="item.url">
+                <NuxtLink :to="item.url">
                   <component :is="item.icon" class="w-10"/>
                   <span class="text-md">{{ item.title }}</span>
-                </a>
+                </NuxtLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

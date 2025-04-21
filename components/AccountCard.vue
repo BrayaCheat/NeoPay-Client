@@ -1,6 +1,6 @@
 <template>
   <NuxtLink :to="linkTo">
-    <Card class="p-6 rounded-2xl border relative">
+    <Card class="p-6 rounded-2xl border relative hover:border-primary-foreground duration-300">
       <!-- Top: Account Name + Status Icon -->
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-base font-medium text-foreground truncate">{{ data.accountName }}</h2>
@@ -12,7 +12,9 @@
           </PopoverTrigger>
           <PopoverContent class="flex flex-col p-0">
             <div v-for="item in options" :key="item.label" class="py-1 border-b">
-              <Button @click.prevent="item.action" variant="none"
+              <Button
+                @click.prevent="item.action"
+                variant="none"
                 class="rounded-none flex items-center justify-start text-muted-foreground hover:text-primary duration-300 cursor-pointer">
                 <component :is="item.icon" class="w-4 h-4 mr-2" />
                 {{ item.label }}
@@ -40,13 +42,15 @@
 
 <script setup>
 import { Card } from '@/components/ui/card'
-import { Ellipsis, ExternalLink, FilePenLine, Heart, LockKeyhole } from 'lucide-vue-next'
+import { Ellipsis, ExternalLink, FilePenLine, Heart, LockKeyhole, Trash } from 'lucide-vue-next'
 import { spacingAccountNumber } from '@/utils/helper.js'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { deleteAccount } from '@/api/account'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
   data: {
@@ -54,6 +58,8 @@ const props = defineProps({
     required: true
   }
 })
+const emits = defineEmits(['onDeleteAccount'])
+const message = ref('')
 
 const linkTo = computed(() => `/accounts/${props.data.id}`)
 const balance = computed(() => `${Number(props.data.balance).toFixed(2)}`)
@@ -77,6 +83,14 @@ const onSetToDefault = async () => {
   alert('Set as default clicked')
 }
 
+const onDeleteAccount = async () => {
+  message.value = await deleteAccount(props.data.id);
+  toast('Failed', {
+    description: message.value?.message
+  })
+  emits('onDeleteAccount')
+}
+
 const options = ref([
   {
     label: 'Share Account Detail',
@@ -97,6 +111,11 @@ const options = ref([
     label: 'Set as default',
     icon: Heart,
     action: onSetToDefault
+  },
+  {
+    label: 'Delete Account',
+    icon: Trash,
+    action: onDeleteAccount
   }
 ])
 
