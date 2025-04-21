@@ -26,7 +26,7 @@ const breadcrumbParts = computed(() => {
 </script>
 
 <template>
-  <Breadcrumb class="sticky top-0 z-10 backdrop-blur-md p-3">
+  <Breadcrumb class="sticky top-0 z-10 backdrop-blur-md py-3 px-6">
     <BreadcrumbList>
       <!-- Home always first -->
       <BreadcrumbItem>

@@ -8,7 +8,7 @@ interface AccountType {
     currency: string
     balance: number
     accountType: string
-    isActive: boolean
+    active: boolean
     createdAt: string
 }
 

@@ -15,7 +15,8 @@ export default defineNuxtConfig({
   modules: [
     'shadcn-nuxt',
     '@pinia/nuxt',
-    'pinia-plugin-persistedstate/nuxt'
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/color-mode'
   ],
   shadcn: {
     /**
@@ -36,5 +37,16 @@ export default defineNuxtConfig({
     public: {
       BASE_URL: process.env.BASE_URL || 'http://localhost:3000',
     }
+  },
+  app: {
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+      duration: 300
+    }
+  },
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
   }
 })

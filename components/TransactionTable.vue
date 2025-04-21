@@ -1,5 +1,6 @@
 <template>
-  <Table class="border">
+  <div class="rounded-2xl border">
+    <Table>
     <TableCaption>A records of your recent transactions.</TableCaption>
     <TableHeader class="bg-secondary">
       <TableRow>
@@ -28,12 +29,12 @@
           </div>
         </TableHead>
         <!-- <TableHead><CircleDollarSign class="size-4" /> Currency</TableHead> -->
-        <TableHead>
+        <!-- <TableHead>
           <div class="flex items-center gap-2">
             <FileText class="size-4" />
             Remark
           </div>
-        </TableHead>
+        </TableHead> -->
         <TableHead>
           <div class="flex items-center gap-2">
             <Shuffle class="size-4" />
@@ -60,10 +61,10 @@
         <TableCell class="font-medium">{{ item.reference }}</TableCell>
         <TableCell>{{ spacingAccountNumber(item.sender) }}</TableCell>
         <TableCell>{{ spacingAccountNumber(item.receiver) }}</TableCell>
-        <TableCell :class="color(item.status)">{{ amountDisplay }} {{ item.amount }}</TableCell>
+        <TableCell :class="`${colorMapper(item.sender, item.status)} font-bold`"> {{signMapper(item.sender)}} {{ item.amount }} <span class="text-xs font-extralight">USD</span></TableCell>
         <!-- <TableCell>{{ item.currency }}</TableCell> -->
-        <TableCell>{{ sliceText(item.remark, 8) }}</TableCell>
-        <TableCell>{{ item.receiver === props.accountNumber ? 'Received' : 'Sent'  }}</TableCell>
+        <!-- <TableCell>{{ sliceText(item.remark, 8) }}</TableCell> -->
+        <TableCell>{{ typeMapper(item.sender)  }}</TableCell>
         <TableCell>
           <StatusBadge :status="item.status" />
         </TableCell>
@@ -71,6 +72,7 @@
       </TableRow>
     </TableBody>
   </Table>
+  </div>
 </template>
 
 <script setup>
@@ -91,25 +93,32 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  status: {
-    type: String,
-    required: true
-  },
   accountNumber: {
     type: String,
     required: true
   }
 })
-console.log(props.accountNumber)
-const color = (status) => {
-  switch (status) {
-    case 'SUCCESS':
-      return 'text-green-500'
+const colorMapper = (sender, status) => {
+  switch(status){
     case 'FAILED':
-      return 'text-muted-foreground'
+      if (sender == props.accountNumber) {
+        return 'text-red-500';
+      }
+      return 'text-muted-foreground';
+    case 'PENDING':
+      return 'text-yellow-500';
+    case 'SUCCESS':
+      if (sender == props.accountNumber) {
+        return 'text-red-500';
+      }
+      return 'text-green-500';
     default:
-      return 'text-muted-foreground'
+      if (sender == props.accountNumber) {
+        return 'text-red-500';
+      }
+      return 'text-primary';
   }
 }
-const amountDisplay = computed(() => props.status === 'receive' ? '$' : '$')
+const typeMapper = (sender) => sender == props.accountNumber ? 'Sent' : 'Received'
+const signMapper = (sender) => sender == props.accountNumber ? '-' : '+'
 </script>

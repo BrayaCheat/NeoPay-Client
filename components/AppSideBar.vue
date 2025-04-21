@@ -11,33 +11,28 @@ import {
   SidebarMenuItem,
   SidebarMenuButton
 } from '@/components/ui/sidebar'
-import { Home, Banknote, Receipt, DollarSign, CreditCard } from 'lucide-vue-next';
+import { Home, Banknote, Receipt, DollarSign, CreditCard, Users } from 'lucide-vue-next';
 import LogoutButton from '@/components/LogoutButton.vue';
 
 const items = [
   {
     title: "Home",
-    url: "/dashboard",
+    url: "/",
     icon: Home,
   },
   {
     title: "My Accounts",
-    url: "/dashboard/accounts",
-    icon: Banknote,
-  },
-  {
-    title: "Transaction History",
-    url: "/dashboard/transactions",
-    icon: Receipt,
+    url: "/accounts",
+    icon: Users,
   },
   {
     title: "Transfer Money",
-    url: "/dashboard/transfer",
+    url: "/transfer",
     icon: DollarSign,
   },
   {
     title: "Connect Bank",
-    url: "/dashboard/connect",
+    url: "/connect",
     icon: CreditCard,
   },
 ];

@@ -1,5 +1,7 @@
 <template>
-  <VueApexCharts type="donut" :options="chartOptions" :series="series" :width="props.width" />
+  <ClientOnly>
+    <VueApexCharts type="donut" :options="chartOptions" :series="series" />
+  </ClientOnly>
 </template>
 
 <script setup>
@@ -7,28 +9,37 @@ import VueApexCharts from 'vue3-apexcharts'
 
 const props = defineProps({
   data: {
-    type: Array,
+    type: [Array, Object],
     required: true
-  },
-  width: {
-    type: String,
-    default: '300'
   }
 })
 
-// Series and labels
-const series = computed(() => props.data.map(item => item.balance))
-const labels = computed(() => props.data.map(item => item.accountName))
+const normalizedData = computed(() => {
+  return Array.isArray(props.data) ? props.data : props.data ? [props.data] : []
+})
+
+const series = computed(() => {
+  const values = normalizedData.value.map(item => item.balance || 0)
+  const total = values.reduce((a, b) => a + b, 0)
+  return total === 0 ? [1] : values
+})
+
+const labels = computed(() => {
+  const total = normalizedData.value.reduce((a, b) => a + (b.balance || 0), 0)
+  return total === 0
+    ? normalizedData.value.map(item => item.accountName)
+    : normalizedData.value.map(item => item.accountName)
+})
 
 // Dynamic chart options
 const chartOptions = computed(() => ({
   labels: labels.value,
-  colors: ['#00b894', '#0984e3', '#fd79a8', '#e17055', '#6c5ce7'], // Custom colors
+  colors: ['#00b894', '#0984e3', '#fd79a8', '#e17055', '#6c5ce7'],
   legend: {
     position: 'bottom',
     fontSize: '14px',
     labels: {
-      colors: ['#333'], // label text color
+      colors: ['#333'],
       useSeriesColors: false
     }
   },
@@ -52,8 +63,10 @@ const chartOptions = computed(() => ({
             label: labels.value,
             fontSize: '14px',
             formatter: () => {
-              return `$${series.value.reduce((a, b) => a + b, 0).toFixed(2)}`
+              const total = series.value?.reduce((a, b) => a + b, 0)
+              return normalizedData.value.reduce((a, b) => a + b.balance, 0) === 0 ? '$0.00' : `$${total.toFixed(2)}`
             }
+
           }
         }
       }

@@ -1,7 +1,5 @@
-import axios from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { useUserStore } from "@/stores/user.js";
 
 export interface TransactionType {
   id: number;
@@ -20,13 +18,14 @@ export interface TransactionType {
 export const useTransactionStore = defineStore(
   "transaction",
   () => {
-    // const transactions = ref<TransactionType[] | null>(null);
-    const receiverTransactions = ref<TransactionType[] | null>(null);
-    const senderTransactions = ref<TransactionType[] | null>(null);
+    const transactions = ref<TransactionType[] | null>(null);
+    const receiverTransactions = ref<any[] | null>(null);
+    const senderTransactions = ref<any[] | null>(null);
 
     const clearTransactions = () => {
       receiverTransactions.value = null;
       senderTransactions.value = null;
+      transactions.value = null
       localStorage.removeItem("transaction");
     }
 
@@ -34,6 +33,7 @@ export const useTransactionStore = defineStore(
       // states
       receiverTransactions,
       senderTransactions,
+      transactions,
 
       //methods
       clearTransactions
