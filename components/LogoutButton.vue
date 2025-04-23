@@ -21,6 +21,6 @@ const onLogout = async () => {
   userStore.clearUser()
   transactionStore.clearTransactions()
   accountStore.clearAccount()
-  return navigateTo('/login')
+  return navigateTo('/auth')
 }
 </script>

@@ -28,7 +28,7 @@
                   </div>
                   <Input id="password" type="password" required v-model.trim.lazy="authForm.password" />
                 </div>
-                <Button type="submit" class="w-full" :disabled="isLoading">
+                <Button type="submit" class="w-full cursor-pointer" :disabled="isLoading">
                   <component v-if="isLoading" :is="isLoading ? Loader : ''" class="ml-2 animate-spin" />
                   <div v-else>Login</div>
                 </Button>
@@ -66,17 +66,16 @@
                 </div>
                 <div class="text-center text-sm">
                   Don't have an account?
-                  <a href="#" class="underline underline-offset-4">
+                  <NuxtLink to="/auth/signup" class="underline underline-offset-4">
                     Sign up
-                  </a>
+                  </NuxtLink>
                 </div>
               </div>
             </form>
             <div class="bg-muted relative hidden md:block">
               <NuxtImg
                 src="https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Image" class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-              />
+                alt="Image" class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale" />
             </div>
           </CardContent>
         </Card>
@@ -107,6 +106,8 @@ import { useAccountStore } from '@/stores/account.js';
 import { getAccount } from '@/api/account/index'
 import { getUserBalance, getUserDetail } from '@/api/user';
 import { Loader } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
+import { isAxiosError } from 'axios'
 
 const userStore = useUserStore()
 const accountStore = useAccountStore()
@@ -123,8 +124,29 @@ const authForm = reactive({
 })
 
 const onLogin = async () => {
-  isLoading.value = true
-  authStore.auth = await login(authForm.email, authForm.password);
+  try {
+    isLoading.value = true
+    const res = await login(authForm.email, authForm.password);
+    if (res?.status !== 200) {
+      isLoading.value = false
+      console.log('Error response: ', res)
+      toast(res?.data?.detail || 'Internal server error', {
+        description: res?.data?.description || 'Failed to signin',
+        richColors: true,
+        closeButton: true
+      })
+      return
+    }
+    isLoading.value = false
+    authStore.auth = res?.data
+    console.log('Response from login: ', res)
+  } catch (error: any) {
+    isLoading.value = false
+    if(isAxiosError(error)){
+      console.log("Caught error: ", error)
+      toast(error?.response?.data?.description || error?.response, {style: { backgroundColor: 'var(--destructive)', color: 'var(--primary)', border: 'var(--destructive)' }})
+    }
+  }
 }
 
 watch(() => authStore.auth, async (newAuth) => {
@@ -132,11 +154,9 @@ watch(() => authStore.auth, async (newAuth) => {
     userStore.user = await getUserDetail();
     userStore.balance = await getUserBalance(userStore.user?.id);
     accountStore.accounts = await getAccount(userStore.user?.id);
-    setTimeout(() => {
-      isLoading.value = false
-      return navigateTo('/')
-    }, 3000);
+    isLoading.value = false
+    return navigateTo('/')
   }
-}, { deep: true, immediate: true })
+}, { deep: true })
 
 </script>

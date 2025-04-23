@@ -34,9 +34,9 @@
               </li>
               <li class="flex items-center justify-between border-b pb-2">
                 <span class="text-muted-foreground">Status</span>
-                <Badge :variant="filteredAccount.active ? 'default' : 'secondary'" class="capitalize">
+                <StatusBadge :status="filteredAccount.active ? 'SUCCESS' : 'FAILED'" class="capitalize">
                   {{ filteredAccount.active ? 'Active' : 'Inactive' }}
-                </Badge>
+                </StatusBadge>
               </li>
               <li class="flex items-center justify-between">
                 <span class="text-muted-foreground">Created</span>
@@ -50,8 +50,15 @@
       </div>
     </div>
 
-    <TransactionTable class="cols-span-3" :data="filteredTransaction"
-          :accountNumber="filteredAccount.accountNumber" />
+    <TransactionTable
+          v-if="filteredTransaction.length > 0"
+          class="cols-span-3"
+          :data="filteredTransaction"
+          :accountNumber="filteredAccount.accountNumber"
+    />
+    <SkeletonCard
+      v-else
+    />
   </div>
 </template>
 
@@ -70,6 +77,7 @@ import { getTransaction } from '@/api/transaction'
 import { getAccount } from '@/api/account'
 import { Settings } from 'lucide-vue-next'
 import {spacingAccountNumber} from '@/utils/helper.js'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const { accountId } = useRoute().params
 const accountStore = useAccountStore()

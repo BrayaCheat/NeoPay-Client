@@ -36,8 +36,8 @@ const breadcrumbParts = computed(() => {
 
       <template v-for="(crumb, index) in breadcrumbParts" :key="crumb.path">
         <BreadcrumbItem v-if="!crumb.isLast">
-          <BreadcrumbLink :href="crumb.path">
-            {{ crumb.name }}
+          <BreadcrumbLink as-child>
+            <NuxtLink :to="crumb.path">{{ crumb.name }}</NuxtLink>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbPage v-else>

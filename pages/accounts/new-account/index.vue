@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import HeaderLabel from '~/components/Header.vue';
+import HeaderLabel from '@/components/Header.vue';
 import {
   Select,
   SelectContent,
@@ -73,7 +73,7 @@ const onCreateNewAccount = async () => {
     type: 'success',
   })
   setTimeout(() => {
-    return navigateTo('/dashboard/accounts')
+    return navigateTo('/accounts')
   }, 1000);
 }
 </script>
